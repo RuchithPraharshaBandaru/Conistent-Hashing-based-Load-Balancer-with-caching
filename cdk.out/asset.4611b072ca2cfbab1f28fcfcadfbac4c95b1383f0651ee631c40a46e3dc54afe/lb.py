@@ -8,7 +8,7 @@ from flask import Flask, jsonify, request
 from flask_socketio import SocketIO
 import pymongo
 from flask_cors import CORS
-
+CORS(app)
 
 
 # Config
@@ -25,7 +25,6 @@ if not MONGODB_URI:
 
 # Flask + SocketIO
 app = Flask(__name__)
-CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*")
 
 # MongoDB client

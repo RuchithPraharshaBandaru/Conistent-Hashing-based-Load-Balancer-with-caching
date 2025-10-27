@@ -1,0 +1,35 @@
+.server-table {
+  margin: 20px auto;
+  border-collapse: collapse;
+  width: 80%;
+  background: #fff;
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}
+
+.server-table th, .server-table td {
+  border: 1px solid #ddd;
+  padding: 10px 15px;
+  text-align: center;
+}
+
+.server-table th {
+  background-color: #0066cc;
+  color: white;
+}
+
+.server-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.server-table tr:hover {
+  background-color: #f1f1f1;
+}
+
+.active td {
+  color: green;
+  font-weight: bold;
+}
+
+.inactive td {
+  color: red;
+}

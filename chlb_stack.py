@@ -70,7 +70,7 @@ class CHLBStack(Stack):
                 "amazon-linux-extras enable python3.8 -y || true",
                 "yum install -y python3 unzip amazon-cloudwatch-agent",
                 # ✅ Fix urllib3 compatibility
-                "pip3 install flask requests pymongo boto3 'urllib3<1.27'",
+                "pip3 install flask flask-cors requests pymongo boto3 'urllib3<1.27'",
 
                 # --- CloudWatch Config ---
                 "cat <<'EOF' > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json",
@@ -137,7 +137,7 @@ print('WROTE CONFIG:', conf)
             "amazon-linux-extras enable python3.8 -y || true",
             "yum install -y python3 unzip amazon-cloudwatch-agent",
             # ✅ Include urllib3 fix
-            "pip3 install flask 'flask-socketio==5.3.6' requests pymongo boto3 'urllib3<1.27'",
+            "pip3 install flask flask-cors 'flask-socketio==5.3.6' requests pymongo boto3 'urllib3<1.27'",
 
             # --- CloudWatch Config ---
             "cat <<'EOF' > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json",

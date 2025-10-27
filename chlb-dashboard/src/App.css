@@ -1,0 +1,16 @@
+.App {
+  text-align: center;
+  padding: 30px;
+  font-family: Arial, sans-serif;
+  background-color: #f4f6f8;
+  color: #333;
+}
+
+h1 {
+  color: #0066cc;
+}
+
+.loading {
+  font-style: italic;
+  color: #666;
+}
