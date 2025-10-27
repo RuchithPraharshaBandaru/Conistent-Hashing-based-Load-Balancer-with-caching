@@ -7,7 +7,7 @@ function App() {
   const [servers, setServers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const API_URL = "http://54.224.142.41/_internal/state"; // replace with your LB IP
+  const API_URL = "http://35.153.133.110:5000/_internal/state"; // replace with your LB IP
 
   useEffect(() => {
     async function fetchData() {
