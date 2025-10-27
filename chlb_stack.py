@@ -56,15 +56,12 @@ class CHLBStack(Stack):
         for i in range(3):
             ud_commands = [
                 "#!/bin/bash -xe",
+                "exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1",
                 "yum update -y || true",
                 "amazon-linux-extras enable python3.8 -y || true",
-                "yum install -y python3 unzip amazon-cloudwatch-agent -y",
+                "yum install -y python3 unzip amazon-cloudwatch-agent",
                 "pip3 install flask requests pymongo boto3",
-                f"aws s3 cp s3://{scripts_asset.s3_bucket_name}/{scripts_asset.s3_object_key} /home/ec2-user/scripts.zip",
-                "cd /home/ec2-user",
-                "unzip -o scripts.zip -d scripts",
-
-                # --- Configure CloudWatch Agent ---
+                
                 "cat <<'EOF' > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json",
                 "{",
                 "  \"logs\": {",
@@ -78,16 +75,19 @@ class CHLBStack(Stack):
                 "  }",
                 "}",
                 "EOF",
-                "systemctl enable amazon-cloudwatch-agent",
-                "systemctl start amazon-cloudwatch-agent",
+                "/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json -s",
 
-                # --- Start backend app ---
-                f"SERVER_NAME=Backend-{i+1} nohup python3 /home/ec2-user/scripts/backend_app.py > /home/ec2-user/backend.log 2>&1 &"
+                f"aws s3 cp s3://{scripts_asset.s3_bucket_name}/{scripts_asset.s3_object_key} /home/ec2-user/scripts.zip",
+                "cd /home/ec2-user",
+                "unzip -o scripts.zip",
+
+                f"SERVER_NAME=Backend-{i+1} nohup python3 /home/ec2-user/backend_app.py > /home/ec2-user/backend.log 2>&1 &"
             ]
 
             instance = ec2.Instance(self, f"Backend{i+1}",
                                     instance_type=ec2.InstanceType(instance_type),
-                                    machine_image=ec2.MachineImage.latest_amazon_linux(),
+                                    # CORRECTED OS
+                                    machine_image=ec2.MachineImage.latest_amazon_linux2(),
                                     vpc=vpc,
                                     security_group=sg,
                                     key_name=key_name,
@@ -102,15 +102,12 @@ class CHLBStack(Stack):
         # --- Load Balancer EC2 Instance ---
         lb_ud_commands = [
             "#!/bin/bash -xe",
+            "exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1",
             "yum update -y || true",
             "amazon-linux-extras enable python3.8 -y || true",
-            "yum install -y python3 unzip amazon-cloudwatch-agent -y",
+            "yum install -y python3 unzip amazon-cloudwatch-agent",
             "pip3 install flask flask-socketio requests pymongo boto3",
-            f"aws s3 cp s3://{scripts_asset.s3_bucket_name}/{scripts_asset.s3_object_key} /home/ec2-user/scripts.zip",
-            "cd /home/ec2-user",
-            "unzip -o scripts.zip -d scripts",
-
-            # --- Configure CloudWatch Agent ---
+            
             "cat <<'EOF' > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json",
             "{",
             "  \"logs\": {",
@@ -125,33 +122,36 @@ class CHLBStack(Stack):
             "  }",
             "}",
             "EOF",
-            "systemctl enable amazon-cloudwatch-agent",
-            "systemctl start amazon-cloudwatch-agent",
+            "/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json -s",
 
-            # --- Write config.py dynamically ---
-            "python3 - <<'PY'\n"
-            "import boto3, json\n"
-            f"region = '{region}'\n"
-            "ec2 = boto3.client('ec2', region_name=region)\n"
-            "res = ec2.describe_instances(Filters=[{'Name':'tag:Role','Values':['CHLBBackend']},{'Name':'instance-state-name','Values':['running']}])\n"
-            "servers = []\n"
-            "for r in res['Reservations']:\n"
-            "    for i in r['Instances']:\n"
-            "        ip = i.get('PrivateIpAddress')\n"
-            "        name = next((t['Value'] for t in i.get('Tags',[]) if t['Key']=='Name'), 'Unknown')\n"
-            "        servers.append({'name': name, 'ip': ip, 'port': 8080})\n"
-            f"conf = f\"servers = {{json.dumps(servers)}}\\nMONGODB_URI = '{mongodb_uri}'\\nLB_PORT = 5000\\n\"\n"
-            "with open('/home/ec2-user/scripts/config.py','w') as f:\n"
-            "    f.write(conf)\n"
-            "print('WROTE CONFIG:', conf)\n"
+            f"aws s3 cp s3://{scripts_asset.s3_bucket_name}/{scripts_asset.s3_object_key} /home/ec2-user/scripts.zip",
+            "cd /home/ec2-user",
+            "unzip -o scripts.zip",
+
+            "python3 - <<'PY'\\n"
+            "import boto3, json\\n"
+            f"region = '{region}'\\n"
+            "ec2 = boto3.client('ec2', region_name=region)\\n"
+            "res = ec2.describe_instances(Filters=[{'Name':'tag:Role','Values':['CHLBBackend']},{'Name':'instance-state-name','Values':['running']}])\\n"
+            "servers = []\\n"
+            "for r in res['Reservations']:\\n"
+            "    for i in r['Instances']:\\n"
+            "        ip = i.get('PrivateIpAddress')\\n"
+            "        name = next((t['Value'] for t in i.get('Tags',[]) if t['Key']=='Name'), 'Unknown')\\n"
+            "        servers.append({'name': name, 'ip': ip, 'port': 8080})\\n"
+            f"conf = f\"servers = {{json.dumps(servers)}}\\nMONGODB_URI = '{mongodb_uri}'\\nLB_PORT = 5000\\n\"\\n"
+            "with open('/home/ec2-user/config.py','w') as f:\\n"
+            "    f.write(conf)\\n"
+            "print('WROTE CONFIG:', conf)\\n"
             "PY",
-            "nohup python3 /home/ec2-user/scripts/mongo_bootstrap.py > /home/ec2-user/mongo_bootstrap.log 2>&1 &",
-            "nohup python3 /home/ec2-user/scripts/lb.py > /home/ec2-user/lb.log 2>&1 &"
+            "nohup python3 /home/ec2-user/mongo_bootstrap.py > /home/ec2-user/mongo_bootstrap.log 2>&1 &",
+            "nohup python3 /home/ec2-user/lb.py > /home/ec2-user/lb.log 2>&1 &"
         ]
 
         lb_instance = ec2.Instance(self, "LBInstance",
                                    instance_type=ec2.InstanceType(instance_type),
-                                   machine_image=ec2.MachineImage.latest_amazon_linux(),
+                                   # CORRECTED OS
+                                   machine_image=ec2.MachineImage.latest_amazon_linux2(),
                                    vpc=vpc,
                                    security_group=sg,
                                    key_name=key_name,

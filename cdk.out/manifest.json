@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::231545823700:role/cdk-hnb659fds-deploy-role-231545823700-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::231545823700:role/cdk-hnb659fds-cfn-exec-role-231545823700-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-231545823700-us-east-1/09c6909dc2d2bee0fe44c0e8caf65c76314ded530610b5259fb1c553f351ab89.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-231545823700-us-east-1/84e37af3c73204221ec5814a66e6bec6180c6e3c6e1a43470dab449907e40070.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -76,10 +76,10 @@
             "data": "Backend1A3ACC892"
           }
         ],
-        "/CHLBStack/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn-ami-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
+        "/CHLBStack/SsmParameterValue:--aws--service--ami-amazon-linux-latest--amzn2-ami-kernel-5.10-hvm-x86_64-gp2:C96584B6-F00A-464E-AD19-53AFF4B05118.Parameter": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamznamihvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
+            "data": "SsmParameterValueawsserviceamiamazonlinuxlatestamzn2amikernel510hvmx8664gp2C96584B6F00A464EAD1953AFF4B05118Parameter"
           }
         ],
         "/CHLBStack/Backend2/InstanceRole/Resource": [
