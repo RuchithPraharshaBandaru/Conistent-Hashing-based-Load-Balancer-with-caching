@@ -4,7 +4,7 @@ import json
 import boto3
 import pymongo
 
-MONGODB_URI =  "mongodb+srv://ruchithpraharshab23_db_user:Ruchith%402005@ccproject.waghehd.mongodb.net/chlb?retryWrites=true&w=majority&appName=CCPROJECT"
+MONGODB_URI = "mongodb+srv://ruchithpraharshab23_db_user:Ruchith%402005@ccproject.waghehd.mongodb.net/chlb"
 if not MONGODB_URI:
     try:
         from config import MONGODB_URI as cfg_muri   # <-- FIXED

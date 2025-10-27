@@ -141,5 +141,4 @@ if __name__ == "__main__":
         rebuild_ring()
     except Exception as e:
         print("[LB] initial rebuild failed:", e)
-    socketio.run(app, host="0.0.0.0", port=LB_PORT, allow_unsafe_werkzeug=True)
-
+    socketio.run(app, host="0.0.0.0", port=LB_PORT)

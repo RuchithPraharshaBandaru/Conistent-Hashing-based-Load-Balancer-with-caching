@@ -10,7 +10,7 @@ import pymongo
 
 # Config
 LB_PORT = int(os.environ.get("LB_PORT", 5000))
-MONGODB_URI =  "mongodb+srv://ruchithpraharshab23_db_user:Ruchith%402005@ccproject.waghehd.mongodb.net/chlb?retryWrites=true&w=majority&appName=CCPROJECT" # CDK writes this into config.py on EC2
+MONGODB_URI = "mongodb+srv://ruchithpraharshab23_db_user:Ruchith%402005@ccproject.waghehd.mongodb.net/chlb" # CDK writes this into config.py on EC2
 
 if not MONGODB_URI:
     # fallback: try to import generated config (CDK user-data should create it)
@@ -141,5 +141,4 @@ if __name__ == "__main__":
         rebuild_ring()
     except Exception as e:
         print("[LB] initial rebuild failed:", e)
-    socketio.run(app, host="0.0.0.0", port=LB_PORT, allow_unsafe_werkzeug=True)
-
+    socketio.run(app, host="0.0.0.0", port=LB_PORT)
