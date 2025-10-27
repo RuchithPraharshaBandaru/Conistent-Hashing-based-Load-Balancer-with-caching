@@ -1,0 +1,36 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "aa6450eb944ae8c34e72ae7793ff99ee1c01fd16a8da15231e99d03aa01953b1": {
+      "displayName": "ScriptsAsset",
+      "source": {
+        "path": "asset.aa6450eb944ae8c34e72ae7793ff99ee1c01fd16a8da15231e99d03aa01953b1",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "231545823700-us-east-1-2aa97d73": {
+          "bucketName": "cdk-hnb659fds-assets-231545823700-us-east-1",
+          "objectKey": "aa6450eb944ae8c34e72ae7793ff99ee1c01fd16a8da15231e99d03aa01953b1.zip",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::231545823700:role/cdk-hnb659fds-file-publishing-role-231545823700-us-east-1"
+        }
+      }
+    },
+    "09c6909dc2d2bee0fe44c0e8caf65c76314ded530610b5259fb1c553f351ab89": {
+      "displayName": "CHLBStack Template",
+      "source": {
+        "path": "CHLBStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "231545823700-us-east-1-3f81d61e": {
+          "bucketName": "cdk-hnb659fds-assets-231545823700-us-east-1",
+          "objectKey": "09c6909dc2d2bee0fe44c0e8caf65c76314ded530610b5259fb1c553f351ab89.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::231545823700:role/cdk-hnb659fds-file-publishing-role-231545823700-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}
