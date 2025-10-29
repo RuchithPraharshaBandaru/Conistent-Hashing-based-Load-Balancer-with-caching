@@ -13,25 +13,29 @@ servers_col = db["servers"]
 
 cloudwatch = boto3.client("cloudwatch", region_name=os.environ.get("AWS_REGION", "us-east-1"))
 
-def get_avg_cpu(instance_id, minutes=5):
+def get_avg_cpu(instance_id, minutes=10):
+    """Return average CPU over `minutes`. None on error/no datapoint."""
     try:
         end = datetime.utcnow()
         start = end - timedelta(minutes=minutes)
         resp = cloudwatch.get_metric_statistics(
-            Namespace='AWS/EC2',
-            MetricName='CPUUtilization',
-            Dimensions=[{'Name':'InstanceId', 'Value': instance_id}],
+            Namespace="AWS/EC2",
+            MetricName="CPUUtilization",
+            Dimensions=[{"Name": "InstanceId", "Value": instance_id}],
             StartTime=start,
             EndTime=end,
-            Period=300,
-            Statistics=['Average']
+            Period=300,  # 5 min granularity
+            Statistics=["Average"],
         )
-        dps = resp.get('Datapoints', [])
+        dps = sorted(resp.get("Datapoints", []), key=lambda d: d["Timestamp"])
         if not dps:
-            return None
-        return dps[0]['Average']
-    except Exception:
-        return None
+            print(f"[WARN] No datapoints for {instance_id} between {start} and {end}")
+            return 0.0  # fallback to 0% CPU instead of None
+        return float(dps[-1]["Average"])
+    except Exception as e:
+        print(f"[ERROR] CloudWatch metric fetch failed for {instance_id}: {e}")
+        return 0.0
+
 
 def lambda_handler(event, context):
     rebuild_needed = False

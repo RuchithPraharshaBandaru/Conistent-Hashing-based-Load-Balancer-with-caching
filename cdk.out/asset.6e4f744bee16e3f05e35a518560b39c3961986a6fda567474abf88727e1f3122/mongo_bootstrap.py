@@ -1,5 +1,6 @@
 import os
 import time
+import json
 import boto3
 import pymongo
 from datetime import datetime
@@ -40,7 +41,7 @@ def discover_backends():
                     "status": "HEALTHY",
                     "weight": 1,
                     "load_count": 0,
-                    "cpu": 0.0,
+                    "cpu": None,
                     "instance_id": iid,
                     "last_checked": datetime.utcnow()
                 })
@@ -59,7 +60,10 @@ def bootstrap():
     for s in servers:
         existing = servers_col.find_one({"instance_id": s["instance_id"]})
         if existing:
-            servers_col.update_one({"_id": existing["_id"]}, {"$set": s})
+            servers_col.update_one(
+                {"_id": existing["_id"]},
+                {"$set": s}
+            )
             print("[BOOT] updated", s["ip"])
         else:
             servers_col.insert_one(s)

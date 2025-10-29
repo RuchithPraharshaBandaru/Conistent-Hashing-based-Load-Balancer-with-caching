@@ -23,13 +23,13 @@ def get_instance_id_from_ip(ip):
         for r in resp.get("Reservations", []):
             for inst in r.get("Instances", []):
                 return inst["InstanceId"]
-    except Exception as e:
-        print(f"[WARN] Could not resolve instance for {ip}: {e}")
+    except Exception:
+        return None
     return None
 
 
-def get_avg_cpu(instance_id, minutes=10):
-    """Return average CPU over `minutes`. Returns 0.0 if no datapoint."""
+def get_avg_cpu(instance_id, minutes=5):
+    """Return average CPU over `minutes`. None on error/no datapoint."""
     try:
         end = datetime.utcnow()
         start = end - timedelta(minutes=minutes)
@@ -39,26 +39,21 @@ def get_avg_cpu(instance_id, minutes=10):
             Dimensions=[{"Name": "InstanceId", "Value": instance_id}],
             StartTime=start,
             EndTime=end,
-            Period=300,  # 5 min period
+            Period=60 * max(1, minutes),
             Statistics=["Average"],
         )
         dps = sorted(resp.get("Datapoints", []), key=lambda d: d["Timestamp"])
         if not dps:
-            print(f"[WARN] No CPU datapoints found for {instance_id} between {start} and {end}")
-            return 0.0
-        avg = float(dps[-1]["Average"])
-        print(f"[INFO] Instance {instance_id} avg CPU = {avg:.2f}%")
-        return avg
-    except Exception as e:
-        print(f"[ERROR] CloudWatch fetch failed for {instance_id}: {e}")
-        return 0.0
+            return None
+        return float(dps[-1]["Average"])
+    except Exception:
+        return None
 
 
 def calculate_weight_from_cpu(avg_cpu):
     """Convert CPU -> weight. Higher CPU = lower weight."""
     if avg_cpu is None:
-        return 1
-    # Map 0% -> 10, 100% -> 1
+        return None
     return int(max(1, min(10, round(10 - (avg_cpu / 10)))))
 
 
@@ -72,22 +67,25 @@ def lambda_handler(event=None, context=None):
             print(f"[WARN] No instance_id found for {s.get('ip')}")
             continue
 
-        avg_cpu = get_avg_cpu(iid, minutes=10)
+        avg_cpu = get_avg_cpu(iid, minutes=5)
         new_weight = calculate_weight_from_cpu(avg_cpu)
 
         update_fields = {
             "instance_id": iid,
             "last_checked": datetime.utcnow(),
             "cpu": avg_cpu,
-            "weight": new_weight,
         }
+
+        if new_weight is not None:
+            update_fields["weight"] = new_weight
 
         servers_col.update_one({"_id": s["_id"]}, {"$set": update_fields})
 
-        if new_weight != s.get("weight", 1):
+        # Compare weights for rebuild trigger
+        if new_weight is not None and new_weight != s.get("weight", 1):
             rebuild_needed = True
 
-    # Notify LB if needed
+    # notify LB to rebuild ring if needed
     if rebuild_needed and LB_IP:
         try:
             requests.post(f"http://{LB_IP}:5000/trigger_rebuild", timeout=3)
