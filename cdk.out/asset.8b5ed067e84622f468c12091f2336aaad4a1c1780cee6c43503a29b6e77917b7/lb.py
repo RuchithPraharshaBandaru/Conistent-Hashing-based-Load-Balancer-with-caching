@@ -1,4 +1,3 @@
-# scripts/lb.py
 import os
 import threading
 import time
@@ -9,18 +8,17 @@ from flask import Flask, jsonify, request
 from flask_socketio import SocketIO
 import pymongo
 from flask_cors import CORS
-import boto3
-from datetime import datetime
+
+
 
 # Config
 LB_PORT = int(os.environ.get("LB_PORT", 5000))
-MONGODB_URI = os.environ.get("MONGODB_URI") or None
-AWS_REGION = os.environ.get("AWS_REGION", "us-east-1")
+MONGODB_URI =  "mongodb+srv://ruchithpraharshab23_db_user:Ruchith%402005@ccproject.waghehd.mongodb.net/chlb?retryWrites=true&w=majority&appName=CCPROJECT" # CDK writes this into config.py on EC2
 
 if not MONGODB_URI:
     # fallback: try to import generated config (CDK user-data should create it)
     try:
-        from config import MONGODB_URI as MONGODB_URI2
+        from config import MONGODB_URI as MONGODB_URI2   # <-- FIXED
         MONGODB_URI = MONGODB_URI2
     except Exception:
         raise RuntimeError("MONGODB_URI not set in env or config.py")
@@ -35,18 +33,11 @@ mongo = pymongo.MongoClient(MONGODB_URI)
 db = mongo["chlb"]
 servers_col = db["servers"]
 
-# CloudWatch client (optional, requires IAM)
-try:
-    cloudwatch = boto3.client("cloudwatch", region_name=AWS_REGION)
-except Exception:
-    cloudwatch = None
-
-
 # Consistent hash ring implementation with weighted vnodes
 class ConsistentHashRing:
     def __init__(self, vnodes_per_weight=10):
-        self.ring = {}           # hash_int -> server_doc
-        self.sorted_keys = []    # sorted list of hash_ints
+        self.ring = {}
+        self.sorted_keys = []
         self.vnodes_per_weight = vnodes_per_weight
 
     def _hash(self, key):
@@ -75,31 +66,12 @@ class ConsistentHashRing:
         idx = bisect.bisect(self.sorted_keys, h) % len(self.sorted_keys)
         return self.ring[self.sorted_keys[idx]]
 
-    def vnode_snapshot(self):
-        """
-        Return list of vnodes for visualization:
-        each vnode -> {'hash': h, 'server': server_name, 'angle': 0-360}
-        """
-        snapshot = []
-        if not self.sorted_keys:
-            return snapshot
-        # Normalize hash -> angle (0..360)
-        for h in self.sorted_keys:
-            s = self.ring.get(h)
-            name = s.get("name") if s else "unknown"
-            angle = (h % 360)  # simple mapping
-            snapshot.append({"hash": h, "server": name, "angle": angle})
-        return snapshot
-
-
 lb_ring = ConsistentHashRing()
-
 
 def rebuild_ring():
     lb_ring.build()
     broadcast_state()
     print("[LB] Ring rebuilt with", len(lb_ring.sorted_keys), "vnode positions")
-
 
 def periodic_rebuild(interval=30):
     while True:
@@ -109,91 +81,24 @@ def periodic_rebuild(interval=30):
             print("[LB] rebuild error:", e)
         time.sleep(interval)
 
-
-def fetch_cloudwatch_cpu(instance_id, minutes=5):
-    """Return latest CPU average datapoint (or None)."""
-    if cloudwatch is None or instance_id is None:
-        return None
-    try:
-        end = datetime.utcnow()
-        start = end - timedelta(minutes=minutes)
-        resp = cloudwatch.get_metric_statistics(
-            Namespace="AWS/EC2",
-            MetricName="CPUUtilization",
-            Dimensions=[{"Name": "InstanceId", "Value": instance_id}],
-            StartTime=start,
-            EndTime=end,
-            Period=60 * max(1, minutes),
-            Statistics=["Average"],
-        )
-        dps = sorted(resp.get("Datapoints", []), key=lambda d: d["Timestamp"])
-        if not dps:
-            return None
-        return float(dps[-1]["Average"])
-    except Exception:
-        return None
-
-
 def broadcast_state():
-    """
-    Build an enriched state object and emit via socketio.
-    Also used as the HTTP response for /_internal/state.
-    """
     docs = list(servers_col.find({}))
-    servers = []
-    requests_hist = []
+    state = []
     for s in docs:
-        name = s.get("name")
-        ip = s.get("ip")
-        port = s.get("port", 8080)
-        status = s.get("status")
-        weight = int(s.get("weight", 1))
-        load = int(s.get("load_count", 0))
-        instance_id = s.get("instance_id")  # optional
-        cpu = None
-        if instance_id:
-            # best-effort CloudWatch fetch (may require IAM)
-            try:
-                cpu = fetch_cloudwatch_cpu(instance_id, minutes=5)
-            except Exception:
-                cpu = None
-
-        servers.append({
-            "name": name,
-            "ip": ip,
-            "port": port,
-            "status": status,
-            "weight": weight,
-            "vnodes": max(1, weight) * lb_ring.vnodes_per_weight,
-            "load_count": load,
-            "instance_id": instance_id,
-            "cpu": cpu,
+        state.append({
+            "name": s.get("name"),
+            "ip": s.get("ip"),
+            "port": s.get("port", 8080),
+            "status": s.get("status"),
+            "weight": s.get("weight", 1),
+            "vnodes": max(1, int(s.get("weight",1))) * lb_ring.vnodes_per_weight,
+            "load": s.get("load_count", 0)
         })
-        requests_hist.append({"name": name, "load_count": load})
-
-    # vnode snapshot for visualization
-    vnode_list = lb_ring.vnode_snapshot()
-    state = {
-        "timestamp": time.time(),
-        "servers": servers,
-        "vnodes": vnode_list,
-        "ring_size": len(lb_ring.sorted_keys),
-        "requests_histogram": requests_hist,
-    }
-
-    # emit to websocket clients
-    try:
-        socketio.emit("state_update", state)
-    except Exception:
-        pass
-
-    return state
-
+    socketio.emit("state_update", {"servers": state})
 
 # Start periodic rebuild thread
 thread = threading.Thread(target=periodic_rebuild, args=(30,), daemon=True)
 thread.start()
-
 
 # Routes
 @app.route("/<key>", methods=["GET"])
@@ -215,7 +120,6 @@ def route_key(key):
         rebuild_ring()
         return jsonify({"error": "upstream unreachable"}), 502
 
-
 @app.route("/trigger_rebuild", methods=["POST"])
 def trigger_rebuild():
     try:
@@ -224,23 +128,22 @@ def trigger_rebuild():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
 @app.route("/_internal/state", methods=["GET"])
 def internal_state():
-    """
-    Return enriched JSON state for dashboard:
-    {
-      timestamp, servers[], vnodes[], ring_size, requests_histogram[]
-    }
-    """
-    state = broadcast_state()
-    return jsonify(state)
-
+    docs = list(servers_col.find({}))
+    return jsonify([{
+        "name": s.get("name"),
+        "ip": s.get("ip"),
+        "port": s.get("port"),
+        "status": s.get("status"),
+        "weight": s.get("weight",1),
+        "load_count": s.get("load_count", 0)
+    } for s in docs])
 
 if __name__ == "__main__":
     try:
         rebuild_ring()
     except Exception as e:
         print("[LB] initial rebuild failed:", e)
-    # socketio.run binds to 0.0.0.0 so external requests can hit it
     socketio.run(app, host="0.0.0.0", port=LB_PORT, allow_unsafe_werkzeug=True)
+

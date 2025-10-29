@@ -1,37 +1,76 @@
-import React from "react";
-import "./ServerTable.css";
+import React, { useEffect, useState } from "react";
 
-function ServerTable({ servers }) {
-  if (!servers || servers.length === 0) {
-    return <p>No servers registered yet.</p>;
-  }
+const ServerTable = () => {
+  const [servers, setServers] = useState([]); // ✅ initialize as empty array
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetch("http://localhost:5000/servers")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setServers(data);
+        } else if (Array.isArray(data.servers)) {
+          setServers(data.servers);
+        } else {
+          setError("Invalid server data format");
+          console.error("Expected array, got:", data);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        setError("Failed to fetch servers");
+      });
+  }, []);
 
   return (
-    <table className="server-table">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>IP</th>
-          <th>Port</th>
-          <th>Status</th>
-          <th>Weight</th>
-          <th>Load Count</th>
-        </tr>
-      </thead>
-      <tbody>
-        {servers.map((s, idx) => (
-          <tr key={idx} className={s.status === "active" ? "active" : "inactive"}>
-            <td>{s.name}</td>
-            <td>{s.ip}</td>
-            <td>{s.port}</td>
-            <td>{s.status}</td>
-            <td>{s.weight}</td>
-            <td>{s.load_count}</td>
+    <div style={{ padding: "20px" }}>
+      <h1>Server Load Balancer Dashboard</h1>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      <table
+        style={{
+          width: "100%",
+          borderCollapse: "collapse",
+          marginTop: "20px",
+        }}
+      >
+        <thead>
+          <tr style={{ backgroundColor: "#f0f0f0" }}>
+            <th style={thStyle}>Server ID</th>
+            <th style={thStyle}>Current Load</th>
+            <th style={thStyle}>Status</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {servers.map((server) => (
+            <tr key={server.id}>
+              <td style={tdStyle}>{server.id}</td>
+              <td style={tdStyle}>{server.load}%</td>
+              <td style={tdStyle}>
+                {server.status === "active" ? (
+                  <span style={{ color: "green" }}>🟢 Active</span>
+                ) : (
+                  <span style={{ color: "red" }}>🔴 Down</span>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
-}
+};
+
+const thStyle = {
+  border: "1px solid #ddd",
+  padding: "10px",
+  textAlign: "left",
+  fontWeight: "bold",
+};
+
+const tdStyle = {
+  border: "1px solid #ddd",
+  padding: "10px",
+};
 
 export default ServerTable;
