@@ -97,6 +97,11 @@
        "Resource": "*"
       },
       {
+       "Action": "cloudwatch:GetMetricStatistics",
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
        "Action": [
         "s3:GetObject*",
         "s3:GetBucket*",

@@ -49,6 +49,10 @@ class CHLBStack(Stack):
             actions=["ec2:DescribeInstances"],
             resources=["*"]
         ))
+        ec2_role.add_to_policy(iam.PolicyStatement(
+            actions=["cloudwatch:GetMetricStatistics"],
+            resources=["*"]
+        ))
 
         instance_profile = iam.CfnInstanceProfile(self, "EC2InstanceProfile",
                                                   roles=[ec2_role.role_name],
