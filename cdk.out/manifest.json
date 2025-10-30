@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::231545823700:role/cdk-hnb659fds-deploy-role-231545823700-us-east-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::231545823700:role/cdk-hnb659fds-cfn-exec-role-231545823700-us-east-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-231545823700-us-east-1/d291da7c6874b94aa4c593475a521f89677bcc6145c7745c917786b0156a4757.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-231545823700-us-east-1/1b0e1b2c604396f7063a7312c78b27abb6663a2c3fa67368c1ec2ef64b825685.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -140,6 +140,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "LambdaExecRoleA88165BD"
+          }
+        ],
+        "/CHLBStack/CommonDepsLayer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CommonDepsLayer4F0828BA"
+          }
+        ],
+        "/CHLBStack/HealthCheckerLambda/SecurityGroup/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "HealthCheckerLambdaSecurityGroup9889EBF8"
           }
         ],
         "/CHLBStack/HealthCheckerLambda/Resource": [

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 function App() {
   const [data, setData] = useState(null);
-  const LB_ENDPOINT = "http://54.237.247.138:5000/_internal/state"; // 🔁 replace <LB_IP>
+  const LB_ENDPOINT = "http://18.206.100.161:5000/_internal/state"; // 🔁 replace <LB_IP>
 
   useEffect(() => {
     const fetchData = async () => {

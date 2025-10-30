@@ -200,6 +200,16 @@ print('WROTE CONFIG:', conf)
         lambda_role.add_managed_policy(iam.ManagedPolicy.from_aws_managed_policy_name("CloudWatchReadOnlyAccess"))
         lambda_role.add_managed_policy(iam.ManagedPolicy.from_aws_managed_policy_name("AmazonS3ReadOnlyAccess"))
         lambda_role.add_managed_policy(iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaBasicExecutionRole"))
+        lambda_role.add_managed_policy(iam.ManagedPolicy.from_aws_managed_policy_name("service-role/AWSLambdaVPCAccessExecutionRole"))
+        
+        # --- Lambda Layer (dependencies) ---
+        lambda_layer = _lambda.LayerVersion(
+            self, "CommonDepsLayer",
+            code=_lambda.Code.from_asset("layers"),
+            compatible_runtimes=[_lambda.Runtime.PYTHON_3_10],
+            description="Common Python dependencies for CHLB Lambdas"
+        )
+
 
         health_lambda = _lambda.Function(self, "HealthCheckerLambda",
                                          runtime=_lambda.Runtime.PYTHON_3_10,
@@ -207,10 +217,13 @@ print('WROTE CONFIG:', conf)
                                          code=_lambda.Code.from_asset(os.path.join(os.getcwd(), "scripts")),
                                          role=lambda_role,
                                          timeout=Duration.seconds(30),
+                                         vpc=vpc,
+                                         vpc_subnets=ec2.SubnetSelection(subnet_type=ec2.SubnetType.PUBLIC),
+                                         allow_public_subnet=True,
                                          environment={
                                              "MONGODB_URI": mongodb_uri,
                                              "LB_IP": lb_instance.instance_private_ip
-                                         })
+                                         },layers=[lambda_layer])
 
         weight_lambda = _lambda.Function(self, "WeightCalculatorLambda",
                                          runtime=_lambda.Runtime.PYTHON_3_10,
@@ -221,7 +234,7 @@ print('WROTE CONFIG:', conf)
                                          environment={
                                              "MONGODB_URI": mongodb_uri,
                                              "LB_IP": lb_instance.instance_private_ip
-                                         })
+                                         },layers=[lambda_layer])
 
         # --- EventBridge (every 1 min) ---
         rule = events.Rule(self, "EveryMinuteRule",

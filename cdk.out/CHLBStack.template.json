@@ -234,7 +234,7 @@
      }
     ],
     "UserData": {
-     "Fn::Base64": "#!/bin/bash -xe\nexec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1\nyum update -y || true\namazon-linux-extras enable python3.8 -y || true\nyum install -y python3 unzip amazon-cloudwatch-agent\npip3 install flask flask-cors requests pymongo boto3 'urllib3<1.27'\ncat <<'EOF' > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json\n{\n  \"logs\": {\n    \"logs_collected\": {\n      \"files\": {\n        \"collect_list\": [\n          {\"file_path\": \"/home/ec2-user/backend.log\", \"log_group_name\": \"CHLB_BackendLogs\", \"log_stream_name\": \"Backend-1\"}\n        ]\n      }\n    }\n  }\n}\nEOF\n/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json -s\naws s3 cp s3://cdk-hnb659fds-assets-231545823700-us-east-1/fd821526a9bb99cd27b92e3838d4e9853a4acec4c712622c6bd3598e15148730.zip /home/ec2-user/scripts.zip\ncd /home/ec2-user\nunzip -o scripts.zip\nSERVER_NAME=Backend-1 nohup python3 /home/ec2-user/backend_app.py > /home/ec2-user/backend.log 2>&1 &"
+     "Fn::Base64": "#!/bin/bash -xe\nexec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1\nyum update -y || true\namazon-linux-extras enable python3.8 -y || true\nyum install -y python3 unzip amazon-cloudwatch-agent\npip3 install flask flask-cors requests pymongo boto3 'urllib3<1.27'\ncat <<'EOF' > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json\n{\n  \"logs\": {\n    \"logs_collected\": {\n      \"files\": {\n        \"collect_list\": [\n          {\"file_path\": \"/home/ec2-user/backend.log\", \"log_group_name\": \"CHLB_BackendLogs\", \"log_stream_name\": \"Backend-1\"}\n        ]\n      }\n    }\n  }\n}\nEOF\n/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json -s\naws s3 cp s3://cdk-hnb659fds-assets-231545823700-us-east-1/471a696b8ae0f7efd1e301365d0e1a7c1a852135d1e94f6a5e1f35d08c98fc0e.zip /home/ec2-user/scripts.zip\ncd /home/ec2-user\nunzip -o scripts.zip\nSERVER_NAME=Backend-1 nohup python3 /home/ec2-user/backend_app.py > /home/ec2-user/backend.log 2>&1 &"
     }
    },
    "DependsOn": [
@@ -315,7 +315,7 @@
      }
     ],
     "UserData": {
-     "Fn::Base64": "#!/bin/bash -xe\nexec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1\nyum update -y || true\namazon-linux-extras enable python3.8 -y || true\nyum install -y python3 unzip amazon-cloudwatch-agent\npip3 install flask flask-cors requests pymongo boto3 'urllib3<1.27'\ncat <<'EOF' > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json\n{\n  \"logs\": {\n    \"logs_collected\": {\n      \"files\": {\n        \"collect_list\": [\n          {\"file_path\": \"/home/ec2-user/backend.log\", \"log_group_name\": \"CHLB_BackendLogs\", \"log_stream_name\": \"Backend-2\"}\n        ]\n      }\n    }\n  }\n}\nEOF\n/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json -s\naws s3 cp s3://cdk-hnb659fds-assets-231545823700-us-east-1/fd821526a9bb99cd27b92e3838d4e9853a4acec4c712622c6bd3598e15148730.zip /home/ec2-user/scripts.zip\ncd /home/ec2-user\nunzip -o scripts.zip\nSERVER_NAME=Backend-2 nohup python3 /home/ec2-user/backend_app.py > /home/ec2-user/backend.log 2>&1 &"
+     "Fn::Base64": "#!/bin/bash -xe\nexec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1\nyum update -y || true\namazon-linux-extras enable python3.8 -y || true\nyum install -y python3 unzip amazon-cloudwatch-agent\npip3 install flask flask-cors requests pymongo boto3 'urllib3<1.27'\ncat <<'EOF' > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json\n{\n  \"logs\": {\n    \"logs_collected\": {\n      \"files\": {\n        \"collect_list\": [\n          {\"file_path\": \"/home/ec2-user/backend.log\", \"log_group_name\": \"CHLB_BackendLogs\", \"log_stream_name\": \"Backend-2\"}\n        ]\n      }\n    }\n  }\n}\nEOF\n/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json -s\naws s3 cp s3://cdk-hnb659fds-assets-231545823700-us-east-1/471a696b8ae0f7efd1e301365d0e1a7c1a852135d1e94f6a5e1f35d08c98fc0e.zip /home/ec2-user/scripts.zip\ncd /home/ec2-user\nunzip -o scripts.zip\nSERVER_NAME=Backend-2 nohup python3 /home/ec2-user/backend_app.py > /home/ec2-user/backend.log 2>&1 &"
     }
    },
    "DependsOn": [
@@ -396,7 +396,7 @@
      }
     ],
     "UserData": {
-     "Fn::Base64": "#!/bin/bash -xe\nexec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1\nyum update -y || true\namazon-linux-extras enable python3.8 -y || true\nyum install -y python3 unzip amazon-cloudwatch-agent\npip3 install flask flask-cors requests pymongo boto3 'urllib3<1.27'\ncat <<'EOF' > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json\n{\n  \"logs\": {\n    \"logs_collected\": {\n      \"files\": {\n        \"collect_list\": [\n          {\"file_path\": \"/home/ec2-user/backend.log\", \"log_group_name\": \"CHLB_BackendLogs\", \"log_stream_name\": \"Backend-3\"}\n        ]\n      }\n    }\n  }\n}\nEOF\n/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json -s\naws s3 cp s3://cdk-hnb659fds-assets-231545823700-us-east-1/fd821526a9bb99cd27b92e3838d4e9853a4acec4c712622c6bd3598e15148730.zip /home/ec2-user/scripts.zip\ncd /home/ec2-user\nunzip -o scripts.zip\nSERVER_NAME=Backend-3 nohup python3 /home/ec2-user/backend_app.py > /home/ec2-user/backend.log 2>&1 &"
+     "Fn::Base64": "#!/bin/bash -xe\nexec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1\nyum update -y || true\namazon-linux-extras enable python3.8 -y || true\nyum install -y python3 unzip amazon-cloudwatch-agent\npip3 install flask flask-cors requests pymongo boto3 'urllib3<1.27'\ncat <<'EOF' > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json\n{\n  \"logs\": {\n    \"logs_collected\": {\n      \"files\": {\n        \"collect_list\": [\n          {\"file_path\": \"/home/ec2-user/backend.log\", \"log_group_name\": \"CHLB_BackendLogs\", \"log_stream_name\": \"Backend-3\"}\n        ]\n      }\n    }\n  }\n}\nEOF\n/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json -s\naws s3 cp s3://cdk-hnb659fds-assets-231545823700-us-east-1/471a696b8ae0f7efd1e301365d0e1a7c1a852135d1e94f6a5e1f35d08c98fc0e.zip /home/ec2-user/scripts.zip\ncd /home/ec2-user\nunzip -o scripts.zip\nSERVER_NAME=Backend-3 nohup python3 /home/ec2-user/backend_app.py > /home/ec2-user/backend.log 2>&1 &"
     }
    },
    "DependsOn": [
@@ -473,7 +473,7 @@
      }
     ],
     "UserData": {
-     "Fn::Base64": "#!/bin/bash -xe\nexec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1\nyum update -y || true\namazon-linux-extras enable python3.8 -y || true\nyum install -y python3 unzip amazon-cloudwatch-agent\npip3 install flask flask-cors 'flask-socketio==5.3.6' requests pymongo boto3 'urllib3<1.27'\ncat <<'EOF' > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json\n{\n  \"logs\": {\n    \"logs_collected\": {\n      \"files\": {\n        \"collect_list\": [\n          {\"file_path\": \"/home/ec2-user/lb.log\", \"log_group_name\": \"CHLB_LBLogs\", \"log_stream_name\": \"LoadBalancer\"},\n          {\"file_path\": \"/home/ec2-user/mongo_bootstrap.log\", \"log_group_name\": \"CHLB_LBLogs\", \"log_stream_name\": \"MongoBootstrap\"}\n        ]\n      }\n    }\n  }\n}\nEOF\n/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json -s\naws s3 cp s3://cdk-hnb659fds-assets-231545823700-us-east-1/fd821526a9bb99cd27b92e3838d4e9853a4acec4c712622c6bd3598e15148730.zip /home/ec2-user/scripts.zip\ncd /home/ec2-user\nunzip -o scripts.zip\ncat <<'EOF' > /home/ec2-user/gen_config.py\n\nimport boto3, json\nregion = 'us-east-1'\nec2 = boto3.client('ec2', region_name=region)\nres = ec2.describe_instances(Filters=[{'Name':'tag:Role','Values':['CHLBBackend']},{'Name':'instance-state-name','Values':['running']}])\nservers = []\nfor r in res['Reservations']:\n    for i in r['Instances']:\n        ip = i.get('PrivateIpAddress')\n        name = next((t['Value'] for t in i.get('Tags',[]) if t['Key']=='Name'), 'Unknown')\n        servers.append({'name': name, 'ip': ip, 'port': 8080})\nconf = f\"servers = {json.dumps(servers)}\\nMONGODB_URI = 'mongodb+srv://ruchithpraharshab23_db_user:Ruchith%402005@ccproject.waghehd.mongodb.net/chlb?retryWrites=true&w=majority&appName=CCPROJECT'\\nLB_PORT = 5000\\n\"\nwith open('/home/ec2-user/config.py','w') as f:\n    f.write(conf)\nprint('WROTE CONFIG:', conf)\n\nEOF\npython3 /home/ec2-user/gen_config.py\nnohup python3 /home/ec2-user/mongo_bootstrap.py > /home/ec2-user/mongo_bootstrap.log 2>&1 &\nnohup python3 /home/ec2-user/lb.py > /home/ec2-user/lb.log 2>&1 &"
+     "Fn::Base64": "#!/bin/bash -xe\nexec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1\nyum update -y || true\namazon-linux-extras enable python3.8 -y || true\nyum install -y python3 unzip amazon-cloudwatch-agent\npip3 install flask flask-cors 'flask-socketio==5.3.6' requests pymongo boto3 'urllib3<1.27'\ncat <<'EOF' > /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json\n{\n  \"logs\": {\n    \"logs_collected\": {\n      \"files\": {\n        \"collect_list\": [\n          {\"file_path\": \"/home/ec2-user/lb.log\", \"log_group_name\": \"CHLB_LBLogs\", \"log_stream_name\": \"LoadBalancer\"},\n          {\"file_path\": \"/home/ec2-user/mongo_bootstrap.log\", \"log_group_name\": \"CHLB_LBLogs\", \"log_stream_name\": \"MongoBootstrap\"}\n        ]\n      }\n    }\n  }\n}\nEOF\n/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json -s\naws s3 cp s3://cdk-hnb659fds-assets-231545823700-us-east-1/471a696b8ae0f7efd1e301365d0e1a7c1a852135d1e94f6a5e1f35d08c98fc0e.zip /home/ec2-user/scripts.zip\ncd /home/ec2-user\nunzip -o scripts.zip\ncat <<'EOF' > /home/ec2-user/gen_config.py\n\nimport boto3, json\nregion = 'us-east-1'\nec2 = boto3.client('ec2', region_name=region)\nres = ec2.describe_instances(Filters=[{'Name':'tag:Role','Values':['CHLBBackend']},{'Name':'instance-state-name','Values':['running']}])\nservers = []\nfor r in res['Reservations']:\n    for i in r['Instances']:\n        ip = i.get('PrivateIpAddress')\n        name = next((t['Value'] for t in i.get('Tags',[]) if t['Key']=='Name'), 'Unknown')\n        servers.append({'name': name, 'ip': ip, 'port': 8080})\nconf = f\"servers = {json.dumps(servers)}\\nMONGODB_URI = 'mongodb+srv://ruchithpraharshab23_db_user:Ruchith%402005@ccproject.waghehd.mongodb.net/chlb?retryWrites=true&w=majority&appName=CCPROJECT'\\nLB_PORT = 5000\\n\"\nwith open('/home/ec2-user/config.py','w') as f:\n    f.write(conf)\nprint('WROTE CONFIG:', conf)\n\nEOF\npython3 /home/ec2-user/gen_config.py\nnohup python3 /home/ec2-user/mongo_bootstrap.py > /home/ec2-user/mongo_bootstrap.log 2>&1 &\nnohup python3 /home/ec2-user/lb.py > /home/ec2-user/lb.log 2>&1 &"
     }
    },
    "DependsOn": [
@@ -534,6 +534,18 @@
         ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
        ]
       ]
+     },
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+       ]
+      ]
      }
     ]
    },
@@ -541,12 +553,48 @@
     "aws:cdk:path": "CHLBStack/LambdaExecRole/Resource"
    }
   },
+  "CommonDepsLayer4F0828BA": {
+   "Type": "AWS::Lambda::LayerVersion",
+   "Properties": {
+    "CompatibleRuntimes": [
+     "python3.10"
+    ],
+    "Content": {
+     "S3Bucket": "cdk-hnb659fds-assets-231545823700-us-east-1",
+     "S3Key": "4588aa107178d0de579c1e1ce80f949a8b1e6f151ba019dd1b52004953b1a5ef.zip"
+    },
+    "Description": "Common Python dependencies for CHLB Lambdas"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CHLBStack/CommonDepsLayer/Resource",
+    "aws:asset:path": "asset.4588aa107178d0de579c1e1ce80f949a8b1e6f151ba019dd1b52004953b1a5ef",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Content"
+   }
+  },
+  "HealthCheckerLambdaSecurityGroup9889EBF8": {
+   "Type": "AWS::EC2::SecurityGroup",
+   "Properties": {
+    "GroupDescription": "Automatic security group for Lambda Function CHLBStackHealthCheckerLambda636A6D50",
+    "SecurityGroupEgress": [
+     {
+      "CidrIp": "0.0.0.0/0",
+      "Description": "Allow all outbound traffic by default",
+      "IpProtocol": "-1"
+     }
+    ],
+    "VpcId": "vpc-0af5da03412be250b"
+   },
+   "Metadata": {
+    "aws:cdk:path": "CHLBStack/HealthCheckerLambda/SecurityGroup/Resource"
+   }
+  },
   "HealthCheckerLambda7309016B": {
    "Type": "AWS::Lambda::Function",
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-231545823700-us-east-1",
-     "S3Key": "fd821526a9bb99cd27b92e3838d4e9853a4acec4c712622c6bd3598e15148730.zip"
+     "S3Key": "471a696b8ae0f7efd1e301365d0e1a7c1a852135d1e94f6a5e1f35d08c98fc0e.zip"
     },
     "Environment": {
      "Variables": {
@@ -560,6 +608,11 @@
      }
     },
     "Handler": "health_checker.lambda_handler",
+    "Layers": [
+     {
+      "Ref": "CommonDepsLayer4F0828BA"
+     }
+    ],
     "Role": {
      "Fn::GetAtt": [
       "LambdaExecRoleA88165BD",
@@ -567,14 +620,32 @@
      ]
     },
     "Runtime": "python3.10",
-    "Timeout": 30
+    "Timeout": 30,
+    "VpcConfig": {
+     "SecurityGroupIds": [
+      {
+       "Fn::GetAtt": [
+        "HealthCheckerLambdaSecurityGroup9889EBF8",
+        "GroupId"
+       ]
+      }
+     ],
+     "SubnetIds": [
+      "subnet-0646c4672d51c90c2",
+      "subnet-0e232d5517d3e9105",
+      "subnet-0d5bb01f4cf203620",
+      "subnet-0c164aa73aa602369",
+      "subnet-0f011ff3f0530d84a",
+      "subnet-09ad6c6c894ede6a3"
+     ]
+    }
    },
    "DependsOn": [
     "LambdaExecRoleA88165BD"
    ],
    "Metadata": {
     "aws:cdk:path": "CHLBStack/HealthCheckerLambda/Resource",
-    "aws:asset:path": "asset.fd821526a9bb99cd27b92e3838d4e9853a4acec4c712622c6bd3598e15148730",
+    "aws:asset:path": "asset.471a696b8ae0f7efd1e301365d0e1a7c1a852135d1e94f6a5e1f35d08c98fc0e",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -584,7 +655,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-231545823700-us-east-1",
-     "S3Key": "fd821526a9bb99cd27b92e3838d4e9853a4acec4c712622c6bd3598e15148730.zip"
+     "S3Key": "471a696b8ae0f7efd1e301365d0e1a7c1a852135d1e94f6a5e1f35d08c98fc0e.zip"
     },
     "Environment": {
      "Variables": {
@@ -598,6 +669,11 @@
      }
     },
     "Handler": "weight_calculator.lambda_handler",
+    "Layers": [
+     {
+      "Ref": "CommonDepsLayer4F0828BA"
+     }
+    ],
     "Role": {
      "Fn::GetAtt": [
       "LambdaExecRoleA88165BD",
@@ -612,7 +688,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "CHLBStack/WeightCalculatorLambda/Resource",
-    "aws:asset:path": "asset.fd821526a9bb99cd27b92e3838d4e9853a4acec4c712622c6bd3598e15148730",
+    "aws:asset:path": "asset.471a696b8ae0f7efd1e301365d0e1a7c1a852135d1e94f6a5e1f35d08c98fc0e",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -694,7 +770,7 @@
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1WOXU7DQAyEz9L3jaHJCSgSiKdGyQEqd+sWk/2p1l6qaLV3RwlUwNN8M7ZHbqFtt/C4wZs09jQ1jo9QRkU7mYEk5mTJ4E0OhWwLZSSbE+v8mmK+mudz+B+8BVEMlpbJnath9FCG6NZ41T46tvNif+m+36d4ZkfVSHdAEVKBp0WMdLDLdiLdoZBx6I8nhPKSg1WOYan4yz0lzyIcQzX0SUEFypB/fsiOajVr7ah44XBZTzChJ6W0mH3Wa9Zq+lnfY3joYNtBu/kQ5ibloOwJhm/9AgyDqyBCAQAA"
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/1VO20rDQBD9lr5vRpJ8gRUUQTAk4GuZbqd1zV7KzqwlLPvvsrFF+3Suc+mg61poN3jhRh/mxpo95ElQz2okDilqUnjhXSbdQZ5Ip2hkeYkhndXT0d8br54Fvaaa3HhRBh3kMdjVXnEI1uilyj926w8xHI2lorjfITMJw2MFxT1sk55JtsikLLr9ASG/4ULxgyKb4OuaO/2cvJZr8J8PFJ3hWimKvskLQx7T9cFkqRS13pwET8af1hGM6EgoVvGe5JykqGGRz+Afemh76DZfbEwTkxfjCMZf/AG2UHdmXwEAAA=="
    },
    "Metadata": {
     "aws:cdk:path": "CHLBStack/CDKMetadata/Default"
